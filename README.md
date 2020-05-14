@@ -1,1 +1,1 @@
-# zakat
+# zakat | Sistem Informasi Pengelolaan Zakat
