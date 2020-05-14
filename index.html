@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Zakat Fitrah Masjid Al Amin</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8">
+<style>
+
+.numberonly {
+margin-top: 10px;
+border: 0px;
+border-bottom: 1px solid #cacaca;
+width: 100%;
+font-size: 27px;
+}
+
+.money {
+border: 0px;
+width: 82%;
+font-size: 26px;
+margin-left: 6px;
+height: 39px;
+}
+
+.namanama{
+	resize: none;
+	width:100%;
+	margin-top: 10px;
+	font-size:16px;
+	border: 0px;
+	border-bottom: 1px solid #cacaca;
+	height:24px;
+	font-family: arial;
+	text-transform:uppercase;
+}
+
+.process {
+background-color: #16a409;
+width: 45%;
+margin: 0 auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+border-radius: 5px;
+color: white;
+font-size: 22px;
+padding: 10px;
+text-align: center;
+margin-top: 34px;
+margin-bottom: 55px;
+font-weight: bold;
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+<form style="margin:16px;">
+
+<center><b>Zakat Fitrah</b></center><br>
+
+<br>
+Nama <br>
+<textarea class="namanama" id="namaMuzakki" onkeyup="muzakkiInput(this)" style="height:28px; font-size:20px" required ></textarea>
+<br>
+<br>
+
+
+Daftar nama tanggungan <br> <span style="font-size:13px">Pisahkan dengan koma, kosongkan jika tidak ada</span> <br>
+<textarea class="namanama" id="namaTanggungan" onkeyup="tanggunganCounter(this)"  ></textarea>
+<br>
+<br>		
+
+Jumlah jiwa 
+<br>
+<input type="text" autofocus="" required class="numberonly" id="njiwa" onkeyup="calculate()" onkeypress="return isNumberKey(event)" readonly >
+<br><br>
+<input type="radio" name="tipefitrah" id="uang" value="Uang" onclick="calculate()">
+<label for="uang" >Uang (Rp 40.000 per jiwa)</label> <br>
+<input type="radio" name="tipefitrah" id="beras" value="Beras" onclick="calculate()" checked>
+<label for="beras">Beras (3.5 liter per jiwa)</label>
+<br><br>
+
+
+
+
+Zakat Fitrah
+<input type="text" class="numberonly" readonly id="totalfitrah">
+<br>
+<br>
+
+<div id="radio-Sunnah">
+Apakah Anda ingin menyalurkan zakat mal / infak / shadaqah?
+<br>
+<input type="radio" name="sunnah" style="margin-top: 14px" onclick="show()" >
+<label for="uang" >Ya</label> <br>
+<input type="radio" id="tidak_tambah" name="sunnah" checked>
+<label for="beras">Tidak</label>
+</div>
+
+
+
+<div style="display:none" id="tambahan">
+
+Zakat mal<br>
+<span style="font-size:24px">Rp</span> <input type="number"  autofocus=""  id="mal" class="money" onkeyup="calculateAll()"   onkeypress="return isNumberKey(event)" placeholder="0" >
+<br>
+<br>
+Infak<br>
+<span style="font-size:24px">Rp</span> <input type="number" autofocus=""  id="inf" class="money"  onkeyup="calculateAll()" onkeypress="return isNumberKey(event)"  placeholder="0" >
+<br>
+<br>
+Shadaqah<br>
+<span style="font-size:24px">Rp</span> <input type="number" autofocus=""  id="sha" class="money" onkeyup="calculateAll()" onkeypress="return isNumberKey(event)" placeholder="0" >
+<br>
+<br>
+<b>Total</b><br>
+<input type="text" class="numberonly" readonly id="totalsemua" >
+</div>
+
+
+
+</form>
+<div class="process" onclick="finalize()">OK</div>
+
+
+
+<script>
+
+
+document.addEventListener('DOMContentLoaded', function(e){
+	document.getElementById("tidak_tambah").checked = true;
+	window.nama = ""
+	window.jumlahJiwa = 0;
+	window.tipeFitrah = 1;
+	window.totalBeras = 0;
+	window.totalUang = 0;
+	window.mal = 0
+	window.infak = 0
+	window.shadaqah = 0
+
+})
+
+
+function muzakkiInput(x){
+
+	//Autogrow
+	if (x.clientHeight < x.scrollHeight){
+		x.style.height = x.scrollHeight +"px";
+	}
+	if(x.scrollTop != 0){
+		x.style.height = x.scrollHeight + "px";
+		window.scrollBy(0,205);
+	}
+
+	if(document.getElementById("namaMuzakki").value != "") {
+		window.jumlahJiwa = 1;
+		document.getElementById("njiwa").value = 1;
+		calculate()
+	}
+	else {
+		window.jumlahJiwa = 0;
+		document.getElementById("njiwa").value = "";
+		document.getElementById("namaTanggungan").value = "";
+	}
+}
+
+function tanggunganCounter(x){
+
+	//Autogrow
+	if (x.clientHeight < x.scrollHeight){
+		x.style.height = x.scrollHeight +"px";
+	}
+	if(x.scrollTop != 0){
+		x.style.height = x.scrollHeight + "px";
+		window.scrollBy(0,205);
+	}
+
+	console.log(x)
+	var txt = document.getElementById("namaTanggungan").value.trim()
+	var namanama = txt.split(",")
+	namanama = namanama.filter(item => item)
+	window.jumlahJiwa = 1 + namanama.length
+	document.getElementById("njiwa").value = window.jumlahJiwa
+
+	console.log(namanama)
+}
+
+function show(){
+	document.getElementById("tambahan").style.display = "block"
+	document.getElementById("radio-Sunnah").style.display = "none"
+}
+
+
+
+function isNumberKey(evt){
+    var charCode = (evt.which) ? evt.which : evt.keyCode
+    if (charCode > 31 && (charCode < 48 || charCode > 57))
+        return false;
+    return true;
+}
+
+
+
+
+function calculate(){
+	window.jiwa = document.getElementById("njiwa").value
+	if(document.getElementById("beras").checked){
+		window.totalUang = 0
+		window.totalBeras = window.jiwa * 3.5
+		console.log(totalBeras)
+		if (totalBeras != 0) {
+			document.getElementById("totalfitrah").value = window.totalBeras + " liter"
+		} 
+		else {
+			document.getElementById("totalfitrah").value = ""
+		}
+		calculateAll()
+	}
+	else{
+		window.totalBeras = 0
+		window.totalUang = parseInt(window.jiwa) * 40000
+		totalUang_s = Number(window.totalUang).toLocaleString('id')
+		console.log(totalUang)
+		document.getElementById("totalfitrah").value = "Rp " + totalUang_s
+		if (jiwa != "") {
+			document.getElementById("totalfitrah").value = "Rp " + totalUang_s
+		} 
+		else {
+			document.getElementById("totalfitrah").value = ""
+		}
+		calculateAll()
+	}
+}
+
+function calculateAll(){
+	window.mal = parseInt(document.getElementById("mal").value)
+	if (isNaN(window.mal)) window.mal = 0
+	window.infak = parseInt(document.getElementById("inf").value)
+	if (isNaN(window.infak)) window.infak = 0
+	window.shadaqah = parseInt(document.getElementById("sha").value)
+	if (isNaN(window.shadaqah)) window.shadaqah = 0
+	console.log("Total uang : " + window.totalUang)
+	console.log("Mal" + window.mal)
+	console.log("Inf" +window.infak)
+	console.log("Sha" + window.shadaqah)
+	
+
+	var all = window.totalUang+window.mal+window.infak+window.shadaqah
+	console.log(all)
+	var all_s = Number(all).toLocaleString('id')
+	document.getElementById("totalsemua").value = "Rp " + all_s
+
+}
+
+
+
+function finalize(){
+	nama = document.getElementById("namaMuzakki").value;
+	if (nama == "") {
+		alert("Mohon masukkan nama")
+		document.getElementById("namaMuzakki").focus()
+	}
+
+	if (document.getElementById("beras").checked) {
+		tipeFitrah = 1;
+	}
+	else {
+		tipeFitrah = 2;
+	}
+	mal = document.getElementById("mal").value
+	infak = document.getElementById("inf").value
+	shadaqah = document.getElementById("sha").value
+}
+
+
+
+
+</script>
+
+</html>
